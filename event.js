@@ -29,6 +29,12 @@ function getHTTP() {
         });
 }
 
+chrome.extension.onMessage.addListener( function(request, sender, sendResponse) {
+    if (request.action = "getHTTP") {
+        getHTTP();
+    }
+});
+
 /* chrome.browserAction.onClicked.addListener(function(tab) {
     getHTTP();
 }); */
