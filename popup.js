@@ -1,6 +1,6 @@
 function handleClick() {
     console.log("Clicked!");
-    chrome.extension.sendMessage({
+    chrome.runtime.sendMessage({
         action: "getHTTP"
     })
 }

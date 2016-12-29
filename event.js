@@ -1,11 +1,16 @@
+var date = "12/29/2016";
+
+function processHTML(data) {
+    console.log("Processing...");
+    var day = $(data).find(".resdate:contains("+ date +")");
+    var times = $(day).siblings();
+    var rooms = $(day).parent()
+}
+
 function validateResponse(data) {
     
     // Naive way to make sure the repsponse is valid. 
-    if ($($.parseHTML(data)).find(".reservations").length > 0) {
-      console.log("Valid request!");
-    } else {
-      console.log("Invalid request.");
-    }  
+    return $(data).find(".reservations").length > 0;
 }
 
 function getHTTP() {
@@ -21,15 +26,20 @@ function getHTTP() {
         }})
         .done(function(data) {
             console.log("Success!");
-            console.log(data.slice(100, 150));
-            validateResponse(data);
+            var parsedData = $.parseHTML(data);
+            if (validateResponse(parsedData)) {
+                console.log("Valid");
+                processHTML(parsedData);
+            } else {
+                console.log("Invalid");
+            }
         })
         .fail(function(jqxhr) {
             console.log("Request Failed, status : " + jqxhr.status)
         });
 }
 
-chrome.extension.onMessage.addListener( function(request, sender, sendResponse) {
+chrome.runtime.onMessage.addListener( function(request, sender, sendResponse) {
     if (request.action = "getHTTP") {
         getHTTP();
     }
