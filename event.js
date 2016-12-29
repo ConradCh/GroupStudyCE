@@ -1,10 +1,37 @@
 var date = "12/29/2016";
+var time = "10";
+var hours = 2;
 
 function processHTML(data) {
     console.log("Processing...");
+
+    // Get the row containing the requested day.
     var day = $(data).find(".resdate:contains("+ date +")");
-    var times = $(day).siblings();
-    var rooms = $(day).parent()
+
+    // Get array of all table columns for rooms on requested day.
+    var rooms = $(day).parent().nextUntil().map(function() {
+        return $(this).find(".resourcename");
+    });
+
+    /* For each room, we find the table column the is the slot starting at the
+     * requested time. From there we look ahead to see how many free slots are
+     * available, and compare this number to the number of hours requested.
+     */
+    $(rooms).each(function() {
+        var slots = $(this).nextUntil();
+
+        /* Each slot contains an <input class="start"> with 'value' attribute of the form
+         * 'yyyy-mm-dd%20HH%3A00%3A00' where HH is the hour of the start time
+         * for the slot. */
+        var start = $(slots).find(".start[value*='%20" + time + "%']").parent().parent();
+
+        // If the start slot is reservable, and so are following slots, this
+        // room is valid for the request.
+        if ($(start).is(".slot.reservable") && 
+            $(start).nextUntil(".reserved,.unreservable").length >= (hours - 1)) {
+            console.log(this);
+        }
+    });
 }
 
 function validateResponse(data) {
