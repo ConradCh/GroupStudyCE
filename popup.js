@@ -1,7 +1,10 @@
 function handleClick() {
     console.log("Clicked!");
     chrome.runtime.sendMessage({
-        action: "getHTTP"
+        action: "getHTTP",
+        date: document.getElementById("dateField").value,
+        time: document.getElementById("time").value,
+        hours: document.getElementById("hours").value
     })
 }
 
