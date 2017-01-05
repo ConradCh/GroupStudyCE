@@ -18,8 +18,15 @@ $(document).ready(function () {
         mm='0'+mm
     }
 
+    if (h != 24) {
+        h = h + 1;
+    } else {
+        h = 0;
+        dd = today.getDate() + 1;
+    }
+
     today = yyyy+'-'+mm+'-'+dd;
-    h = h + 1;
+
     document.getElementById("dateField").setAttribute("min", today);
     document.getElementById("dateField").valueAsDate = new Date();
     document.getElementById("time").selectedIndex = h;
