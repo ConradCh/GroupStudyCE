@@ -1,9 +1,16 @@
-var date = "12/29/2016";
-var time = "10";
-var hours = 2;
+function reformatDate(date) {
+    var parts = date.split("-");
+    
+    // Convert into MM/DD/YYYY
+    return parts[1] + "/" + parts[2] + "/" + parts[0];
+}
 
-function processHTML(data) {
+function processHTML(data, date, time, hours) {
     console.log("Processing...");
+   
+    // Reformat date and time so they match format in HTML 
+    date = reformatDate(date);
+    time = time.split(":")[0]; // Grab the hours from the time.
 
     // Get the row containing the requested day.
     var day = $(data).find(".resdate:contains("+ date +")");
@@ -40,8 +47,9 @@ function validateResponse(data) {
     return $(data).find(".reservations").length > 0;
 }
 
-function getHTTP() {
+function getHTTP(date, time, hours) {
     var library_url = "https://bookings.library.utoronto.ca/gerstein/Web/schedule.php";
+    library_url += "?sd=" + date;
 
     // Make AJAX call to get libraries schedule.php
     var jqxhr = $.ajax({
@@ -51,16 +59,18 @@ function getHTTP() {
         xhrFields: {
             withCredentials: true
         }})
+
         .done(function(data) {
             console.log("Success!");
             var parsedData = $.parseHTML(data);
             if (validateResponse(parsedData)) {
                 console.log("Valid");
-                processHTML(parsedData);
+                processHTML(parsedData, date, time, hours);
             } else {
                 console.log("Invalid");
             }
         })
+
         .fail(function(jqxhr) {
             console.log("Request Failed, status : " + jqxhr.status)
         });
@@ -68,10 +78,6 @@ function getHTTP() {
 
 chrome.runtime.onMessage.addListener( function(request, sender, sendResponse) {
     if (request.action = "getHTTP") {
-        getHTTP();
+        getHTTP(request.date, request.time, request.hours);
     }
 });
-
-/* chrome.browserAction.onClicked.addListener(function(tab) {
-    getHTTP();
-}); */
